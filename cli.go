@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -57,10 +58,12 @@ func NewCli(defaultFunc func(map[string]*Option)) *Cli {
 	options[OptHelpName] = &Option{
 		Alias: OptHelpAlias,
 		HasValue: false,
+		Description: OptHelpDesc,
 	}
 	options[OptVersionName] = &Option{
 		Alias: OptVersionAlias,
 		HasValue: false,
+		Description: OptVersionDesc,
 	}
 
 	// Create a root command.
@@ -145,9 +148,8 @@ func (cli *Cli) SetVersion(version string) {
 // Show usage of the command.
 //
 func (cmd *Command) ShowUsage() {
+	// Usage section.
 	var usage strings.Builder
-
-	// Usage section
 	usage.WriteString("Usage: " + cmd.Name)
 	for optionName, option := range cmd.Options {
 		if optionName != "" && option.Alias != "" {
@@ -172,8 +174,26 @@ func (cmd *Command) ShowUsage() {
 		usage.WriteString(strings.Join(commandNames, "|") + "]")
 	}
 
-
     fmt.Println(usage.String())
+
+	// Options section.
+	var desc strings.Builder
+	var totalKeyLength int
+	optionKeys := make([]string, 0, len(cmd.Options))
+	for key := range cmd.Options {
+		optionKeys = append(optionKeys, key)
+		if totalKeyLength < len(key)+1 {
+			totalKeyLength = len(key)+1
+		}
+	}
+	keyFormat := fmt.Sprintf("%%-%ds", totalKeyLength)
+	sort.Strings(optionKeys)
+	desc.WriteString("\n\nOptions:\n")
+	for _, key := range optionKeys {
+		option := cmd.Options[key]
+		desc.WriteString("  " + fmt.Sprintf(keyFormat, key+":") + " " + option.Description + "\n")
+	}
+	fmt.Println(desc.String())
 }
 
 
