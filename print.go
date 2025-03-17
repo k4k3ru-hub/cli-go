@@ -31,17 +31,18 @@ func PrintTable(headers []string, rows [][]interface{}) {
 			}
 		}
 	}
-	totalWidth := 0
-	for _, width := range colWidths {
-		totalWidth += width
-	}
 
 	// Headers
 	for _, header := range headers {
 		fmt.Fprintf(dataWriter, "%s\t", header)
 	}
 	fmt.Fprintln(dataWriter)
-	fmt.Fprintf(dataWriter, "%s\n", strings.Repeat("-", totalWidth))
+
+	// Separator
+	for _, width := range colWidths {
+		fmt.Fprintf(dataWriter, "%s\t", strings.Repeat("-", width))
+	}
+	fmt.Fprintln(dataWriter)
 
 	// Rows
 	for _, row := range rows {
