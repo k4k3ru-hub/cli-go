@@ -1,5 +1,5 @@
 //
-// print.go
+// output.go
 //
 package cli
 
@@ -12,9 +12,9 @@ import (
 
 
 //
-// Print in table format.
+// Output in table format.
 //
-func PrintTable(headers []string, rows [][]interface{}) {
+func OutputTable(headers []string, rows [][]interface{}) {
 	const padding = 2
 	dataWriter := tabwriter.NewWriter(os.Stdout, 0, 0, padding, ' ', 0)
 
