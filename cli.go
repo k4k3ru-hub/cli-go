@@ -39,7 +39,7 @@ type Command struct {
 	Usage		string
 	Options		map[string]*Option
 }
-type CommandFunc func(map[string]*Option)
+type CommandFunc func(*Command)
 type Option struct {
 	Alias		string
 	Value		string
@@ -51,7 +51,7 @@ type Option struct {
 //
 // New CLI
 //
-func NewCli(defaultFunc func(map[string]*Option)) *Cli {
+func NewCli(defaultFunc func(*Command)) *Cli {
 	// Set reserved options.
 	options := make(map[string]*Option)
 	options[OptHelpName] = &Option{
@@ -98,7 +98,7 @@ func (cli *Cli) Run() {
 	// If there is no arguments provided, run the root command.
 	if len(args) == 0 {
 		if cli.Command.Action != nil {
-			cli.Command.Action(cli.Command.Options)
+			cli.Command.Action(cli.Command)
 		} else {
 			cli.Command.ShowUsage()
 		}
@@ -310,7 +310,7 @@ func (cmd *Command) run(options map[string]*Option, args []string) {
 
 	// Run the command action.
 	if cmd.Action != nil {
-		cmd.Action(options)
+		cmd.Action(cmd)
 	} else {
 		cmd.ShowUsage()
 	}

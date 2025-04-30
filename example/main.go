@@ -45,24 +45,24 @@ func main() {
 }
 
 
-func mainFunc(options map[string]*cli.Option) {
-	for _, o := range options {
+func mainFunc(cmd *cli.Command) {
+	for _, o := range cmd.Options {
 		fmt.Printf("%v\n", o)
 	}
 }
 
 
-func listFunc(options map[string]*cli.Option) {
+func listFunc(cmd *cli.Command) {
 	fmt.Printf("Started list func.\n")
-    for _, o := range options {
+    for _, o := range cmd.Options {
         fmt.Printf("%v\n", o)
     }
 }
 
 
-func pushOringFunc(options map[string]*cli.Option) {
+func pushOringFunc(cmd *cli.Command) {
     fmt.Printf("Started push origin func.\n")
-    for _, o := range options {
+    for _, o := range cmd.Options {
         fmt.Printf("%v\n", o)
     }
 }
