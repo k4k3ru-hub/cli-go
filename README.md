@@ -59,7 +59,6 @@ myCli.Command.SetDefaultConfigOption()
 // Customized option.
 myCli.Command.Options["local"] = &cli.Option{
     Alias: "l",
-    HasValue: false,
 }
 ```
 

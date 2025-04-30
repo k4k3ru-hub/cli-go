@@ -44,7 +44,6 @@ type Option struct {
 	Alias		string
 	Value		string
 	Description	string
-	HasValue	bool
 	IsFlagSet	bool
 }
 
@@ -57,12 +56,12 @@ func NewCli(defaultFunc func(map[string]*Option)) *Cli {
 	options := make(map[string]*Option)
 	options[OptHelpName] = &Option{
 		Alias: OptHelpAlias,
-		HasValue: false,
+		IsFlagSet: false,
 		Description: OptHelpDesc,
 	}
 	options[OptVersionName] = &Option{
 		Alias: OptVersionAlias,
-		HasValue: false,
+		IsFlagSet: false,
 		Description: OptVersionDesc,
 	}
 
@@ -131,7 +130,7 @@ func (cmd *Command) SetDefaultConfigOption() {
 	cmd.Options[OptConfigName] = &Option{
 		Alias: OptConfigAlias,
 		Description: OptConfigDesc,
-		HasValue: true,
+		IsFlagSet: false,
 	}
 }
 
@@ -269,7 +268,7 @@ func (cmd *Command) run(options map[string]*Option, args []string) {
 			}
 
 			// Check if the option has a value or not.
-			if foundOption.HasValue {
+			if !foundOption.IsFlagSet {
 				// Override to the option value if the arg has `=`.
 				if strings.Count(arg, "=") == 1 {
 					parts := strings.SplitN(arg, "=", 2)
@@ -284,9 +283,6 @@ func (cmd *Command) run(options map[string]*Option, args []string) {
 						i++
 					}
 				}
-			} else {
-				// Set the `IsFlagSet` flag.
-				foundOption.IsFlagSet = true
 			}
 		} else {
 			// Check if the sub command has been registered or not.

@@ -22,7 +22,6 @@ func main() {
 	listCommand.Action = listFunc
 	listCommand.Options["local"] = &cli.Option{
         Alias: "l",
-        HasValue: false,
     }
 	myCli.Command.Commands = append(myCli.Command.Commands, listCommand)
 
@@ -37,7 +36,6 @@ func main() {
 	pushOriginCommand.Action = pushOringFunc
 	pushOriginCommand.Options["url"] = &cli.Option{
 		Alias: "u",
-		HasValue: true,
 		Value: "https://exmaple.com",
 	}
 	pushCommand.Commands = append(pushCommand.Commands, pushOriginCommand)
