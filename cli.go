@@ -53,30 +53,30 @@ type Option struct {
 // New CLI
 //
 func NewCLI(defaultFunc func(*Command)) *CLI {
-	// Set reserved options.
-	options := make(map[string]*Option)
-	options[OptHelpName] = &Option{
-		Alias: OptHelpAlias,
-		Description: OptHelpDesc,
-		IsFlagSet: false,
-	}
-	options[OptVersionName] = &Option{
-		Alias: OptVersionAlias,
+    // Set reserved options.
+    options := make(map[string]*Option)
+    options[OptHelpName] = &Option{
+        Alias: OptHelpAlias,
+        Description: OptHelpDesc,
+        IsFlagSet: false,
+    }
+    options[OptVersionName] = &Option{
+        Alias: OptVersionAlias,
         Value: OptVersionValue,
-		Description: OptVersionDesc,
-		IsFlagSet: false,
-	}
+        Description: OptVersionDesc,
+        IsFlagSet: false,
+    }
 
-	// Create a root command.
-	rootCommand := &Command{
-		Action: defaultFunc,
-		Name: filepath.Base(os.Args[0]),
-		Options: options,
-	}
+    // Create a root command.
+    rootCommand := &Command{
+        Action: defaultFunc,
+        Name: filepath.Base(os.Args[0]),
+        Options: options,
+    }
 
-	return &CLI{
-		Command: rootCommand,
-	}
+    return &CLI{
+        Command: rootCommand,
+    }
 }
 
 
@@ -84,10 +84,10 @@ func NewCLI(defaultFunc func(*Command)) *CLI {
 // New Command
 //
 func NewCommand(name string) *Command {
-	return &Command{
-		Name: name,
-		Options: make(map[string]*Option),
-	}
+    return &Command{
+        Name: name,
+        Options: make(map[string]*Option),
+    }
 }
 
 
@@ -95,36 +95,36 @@ func NewCommand(name string) *Command {
 // Run CLI
 //
 func (cli *CLI) Run() {
-	args := os.Args[1:]
+    args := os.Args[1:]
 
-	// If there is no arguments provided, run the root command.
-	if len(args) == 0 {
-		if cli.Command.Action != nil {
-			cli.Command.Action(cli.Command)
-		} else {
-			cli.Command.ShowUsage()
-		}
-		return
-	}
+    // If there is no arguments provided, run the root command.
+    if len(args) == 0 {
+        if cli.Command.Action != nil {
+            cli.Command.Action(cli.Command)
+        } else {
+            cli.Command.ShowUsage()
+        }
+        return
+    }
 
-	// Check the help flag.
-	if isHelpFlagSet(args) {
-		cli.Command.ShowUsage()
-		return
-	}
+    // Check the help flag.
+    if isHelpFlagSet(args) {
+        cli.Command.ShowUsage()
+        return
+    }
 
-	// Check the version flag.
-	if isVersionFlagSet(args) {
+    // Check the version flag.
+    if isVersionFlagSet(args) {
         opt := cli.GetOption(OptVersionName)
         if opt != nil {
             fmt.Printf("Version: %s\n", opt.Value)
         }
         return
-	}
-	
+    }
+    
 
-	// Run command.
-	cli.Command.run(cli.Command.Options, args)
+    // Run command.
+    cli.Command.run(cli.Command.Options, args)
 }
 
 
@@ -132,11 +132,11 @@ func (cli *CLI) Run() {
 // Set default config option.
 //
 func (cmd *Command) SetDefaultConfigOption() {
-	cmd.Options[OptConfigName] = &Option{
-		Alias: OptConfigAlias,
-		Description: OptConfigDesc,
-		IsFlagSet: false,
-	}
+    cmd.Options[OptConfigName] = &Option{
+        Alias: OptConfigAlias,
+        Description: OptConfigDesc,
+        IsFlagSet: false,
+    }
 }
 
 
@@ -173,52 +173,52 @@ func (cli *CLI) GetOption(name string) *Option {
 // Show usage of the command.
 //
 func (cmd *Command) ShowUsage() {
-	// Usage section.
-	var usage strings.Builder
-	usage.WriteString("Usage: " + cmd.Name)
-	for optionName, option := range cmd.Options {
-		if optionName != "" && option.Alias != "" {
-			usage.WriteString(" [--" + optionName + "|-" + option.Alias + "]")
-		} else if optionName != "" {
-			usage.WriteString(" [--" + optionName + "]")
-		} else if option.Alias != "" {
-			usage.WriteString(" [-" + option.Alias + "]")
-		} else {
-			continue
-		}
-	}
-	if len(cmd.Commands) > 0 {
-		usage.WriteString(" [")
-		var commandNames []string
-		for _, command := range cmd.Commands {
-			if command.Name == "" {
-				continue
-			}
-			commandNames = append(commandNames, command.Name)
-		}
-		usage.WriteString(strings.Join(commandNames, "|") + "]")
-	}
+    // Usage section.
+    var usage strings.Builder
+    usage.WriteString("Usage: " + cmd.Name)
+    for optionName, option := range cmd.Options {
+        if optionName != "" && option.Alias != "" {
+            usage.WriteString(" [--" + optionName + "|-" + option.Alias + "]")
+        } else if optionName != "" {
+            usage.WriteString(" [--" + optionName + "]")
+        } else if option.Alias != "" {
+            usage.WriteString(" [-" + option.Alias + "]")
+        } else {
+            continue
+        }
+    }
+    if len(cmd.Commands) > 0 {
+        usage.WriteString(" [")
+        var commandNames []string
+        for _, command := range cmd.Commands {
+            if command.Name == "" {
+                continue
+            }
+            commandNames = append(commandNames, command.Name)
+        }
+        usage.WriteString(strings.Join(commandNames, "|") + "]")
+    }
 
     fmt.Println(usage.String())
 
-	// Options section.
-	var desc strings.Builder
-	var totalKeyLength int
-	optionKeys := make([]string, 0, len(cmd.Options))
-	for key := range cmd.Options {
-		optionKeys = append(optionKeys, key)
-		if totalKeyLength < len(key)+1 {
-			totalKeyLength = len(key)+1
-		}
-	}
-	keyFormat := fmt.Sprintf("%%-%ds", totalKeyLength)
-	sort.Strings(optionKeys)
-	desc.WriteString("\n\nOptions:\n")
-	for _, key := range optionKeys {
-		option := cmd.Options[key]
-		desc.WriteString("  " + fmt.Sprintf(keyFormat, key+":") + " " + option.Description + "\n")
-	}
-	fmt.Println(desc.String())
+    // Options section.
+    var desc strings.Builder
+    var totalKeyLength int
+    optionKeys := make([]string, 0, len(cmd.Options))
+    for key := range cmd.Options {
+        optionKeys = append(optionKeys, key)
+        if totalKeyLength < len(key)+1 {
+            totalKeyLength = len(key)+1
+        }
+    }
+    keyFormat := fmt.Sprintf("%%-%ds", totalKeyLength)
+    sort.Strings(optionKeys)
+    desc.WriteString("\n\nOptions:\n")
+    for _, key := range optionKeys {
+        option := cmd.Options[key]
+        desc.WriteString("  " + fmt.Sprintf(keyFormat, key+":") + " " + option.Description + "\n")
+    }
+    fmt.Println(desc.String())
 }
 
 
@@ -226,28 +226,28 @@ func (cmd *Command) ShowUsage() {
 // Get option by the argument.
 //
 func getOptionByArgument(arg string, options map[string]*Option) *Option {
-	if strings.HasPrefix(arg, "--") {
-		optionName := strings.SplitN(arg[2:], "=", 2)[0]
-		if optionName == "" {
-			return nil
-		}
-		for name, option := range options {
-			if name == optionName {
-				return option
-			}
-		}
-	} else if strings.HasPrefix(arg, "-") {
-		optionName := strings.SplitN(arg[1:], "=", 2)[0]
-		if optionName == "" {
-			return nil
-		}
-		for _, option := range options {
-			if option.Alias == optionName {
-				return option
-			}
-		}
-	}
-	return nil
+    if strings.HasPrefix(arg, "--") {
+        optionName := strings.SplitN(arg[2:], "=", 2)[0]
+        if optionName == "" {
+            return nil
+        }
+        for name, option := range options {
+            if name == optionName {
+                return option
+            }
+        }
+    } else if strings.HasPrefix(arg, "-") {
+        optionName := strings.SplitN(arg[1:], "=", 2)[0]
+        if optionName == "" {
+            return nil
+        }
+        for _, option := range options {
+            if option.Alias == optionName {
+                return option
+            }
+        }
+    }
+    return nil
 }
 
 
@@ -255,12 +255,12 @@ func getOptionByArgument(arg string, options map[string]*Option) *Option {
 // Check if help flag (--help or -h) is set in os.Args.
 //
 func isHelpFlagSet(args []string) bool {
-	for _, arg := range args {
-		if arg == "--" + OptHelpName || arg == "-" + OptHelpAlias {
-			return true
-		}
-	}
-	return false
+    for _, arg := range args {
+        if arg == "--" + OptHelpName || arg == "-" + OptHelpAlias {
+            return true
+        }
+    }
+    return false
 }
 
 
@@ -268,12 +268,12 @@ func isHelpFlagSet(args []string) bool {
 // Check if version flag (--version or -v) is set in os.Args.
 //
 func isVersionFlagSet(args []string) bool {
-	for _, arg := range args {
-		if arg == "--" + OptVersionName || arg == "-" + OptVersionAlias {
-			return true
-		}
-	}
-	return false
+    for _, arg := range args {
+        if arg == "--" + OptVersionName || arg == "-" + OptVersionAlias {
+            return true
+        }
+    }
+    return false
 }
 
 
@@ -281,63 +281,63 @@ func isVersionFlagSet(args []string) bool {
 // Run command
 //
 func (cmd *Command) run(options map[string]*Option, args []string) {
-	// Check the arguments.
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
+    // Check the arguments.
+    for i := 0; i < len(args); i++ {
+        arg := args[i]
 
-		if strings.HasPrefix(arg, "--") || strings.HasPrefix(arg, "-") {
-			foundOption := getOptionByArgument(arg, cmd.Options)
-			if foundOption == nil {
-				fmt.Printf("Unknown option: %s\n\n", arg)
-				cmd.ShowUsage()
-				return
-			}
+        if strings.HasPrefix(arg, "--") || strings.HasPrefix(arg, "-") {
+            foundOption := getOptionByArgument(arg, cmd.Options)
+            if foundOption == nil {
+                fmt.Printf("Unknown option: %s\n\n", arg)
+                cmd.ShowUsage()
+                return
+            }
 
-			// Check if the option has a value or not.
-			if !foundOption.IsFlagSet {
-				// Override to the option value if the arg has `=`.
-				if strings.Count(arg, "=") == 1 {
-					parts := strings.SplitN(arg, "=", 2)
-					if len(parts) == 2 {
-						foundOption.Value = parts[1]
-					}
-				} else {
-					if i+1 < len(args) {
-						if !strings.HasPrefix(args[i+1], "-") {
-							foundOption.Value = args[i+1]
-						}
-						i++
-					}
-				}
-			}
-		} else {
-			// Check if the sub command has been registered or not.
-			for _, subCommand := range cmd.Commands {
-				if subCommand.Name == arg {
-					// Migrate options.
-					migratedOptions := options
-					for subCommandOptionName, subCommandOption := range subCommand.Options {
-						// Append / Override an option.
-						migratedOptions[subCommandOptionName] = subCommandOption
-					}
+            // Check if the option has a value or not.
+            if !foundOption.IsFlagSet {
+                // Override to the option value if the arg has `=`.
+                if strings.Count(arg, "=") == 1 {
+                    parts := strings.SplitN(arg, "=", 2)
+                    if len(parts) == 2 {
+                        foundOption.Value = parts[1]
+                    }
+                } else {
+                    if i+1 < len(args) {
+                        if !strings.HasPrefix(args[i+1], "-") {
+                            foundOption.Value = args[i+1]
+                        }
+                        i++
+                    }
+                }
+            }
+        } else {
+            // Check if the sub command has been registered or not.
+            for _, subCommand := range cmd.Commands {
+                if subCommand.Name == arg {
+                    // Migrate options.
+                    migratedOptions := options
+                    for subCommandOptionName, subCommandOption := range subCommand.Options {
+                        // Append / Override an option.
+                        migratedOptions[subCommandOptionName] = subCommandOption
+                    }
 
-					// Run recursively.
-					subCommand.run(migratedOptions, args[i+1:])
-					return
-				}
-			}
+                    // Run recursively.
+                    subCommand.run(migratedOptions, args[i+1:])
+                    return
+                }
+            }
 
-			// Unsupported sub command.
-			fmt.Printf("Unknown sub command: %s\n\n", arg)
-			cmd.ShowUsage()
-			return
-		}
-	}
+            // Unsupported sub command.
+            fmt.Printf("Unknown sub command: %s\n\n", arg)
+            cmd.ShowUsage()
+            return
+        }
+    }
 
-	// Run the command action.
-	if cmd.Action != nil {
-		cmd.Action(cmd)
-	} else {
-		cmd.ShowUsage()
-	}
+    // Run the command action.
+    if cmd.Action != nil {
+        cmd.Action(cmd)
+    } else {
+        cmd.ShowUsage()
+    }
 }
