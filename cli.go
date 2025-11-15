@@ -4,47 +4,48 @@
 package cli
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"sort"
-	"strings"
+    "fmt"
+    "os"
+    "path/filepath"
+    "sort"
+    "strings"
 )
 
 
 const (
-	OptConfigName	= "config"
-	OptConfigAlias	= "c"
-	OptConfigDesc	= "Specify the configuration file to use. Supported formats: JSON, YAML, TOML."
+    OptConfigName  = "config"
+    OptConfigAlias = "c"
+    OptConfigDesc  = "Specify the configuration file to use. Supported formats: JSON, YAML, TOML."
 
-	OptHelpName		= "help"
-	OptHelpAlias	= "h"
-	OptHelpDesc		= "Display a list of available commands and global options."
+    OptHelpName  = "help"
+    OptHelpAlias = "h"
+    OptHelpDesc  = "Display a list of available commands and global options."
 
-	OptVersionName	= "version"
-	OptVersionAlias	= "v"
-	OptVersionDesc	= "Show the version of the CLI tool."
+    OptVersionName  = "version"
+    OptVersionAlias = "v"
+    OptVersionDesc  = "Show the version of the CLI tool."
+    OptVersionValue = "1.0.0"
 )
 
 
 type Cli struct {
-	Command		*Command
-	Version		string
-	execName	string
+    Command  *Command
+    Version  string
+    execName string
 }
 type Command struct {
-	Action		CommandFunc
-	Commands	[]*Command
-	Name		string
-	Usage		string
-	Options		map[string]*Option
+    Action   CommandFunc
+    Commands []*Command
+    Name     string
+    Usage    string
+    Options  map[string]*Option
 }
 type CommandFunc func(*Command)
 type Option struct {
-	Alias		string
-	Value		string
-	Description	string
-	IsFlagSet	bool
+    Alias       string
+    Value       string
+    Description string
+    IsFlagSet   bool
 }
 
 
@@ -56,13 +57,14 @@ func NewCli(defaultFunc func(*Command)) *Cli {
 	options := make(map[string]*Option)
 	options[OptHelpName] = &Option{
 		Alias: OptHelpAlias,
-		IsFlagSet: false,
 		Description: OptHelpDesc,
+		IsFlagSet: false,
 	}
 	options[OptVersionName] = &Option{
 		Alias: OptVersionAlias,
-		IsFlagSet: false,
+        Value: OptVersionValue,
 		Description: OptVersionDesc,
+		IsFlagSet: false,
 	}
 
 	// Create a root command.
