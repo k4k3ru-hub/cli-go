@@ -115,8 +115,11 @@ func (cli *CLI) Run() {
 
 	// Check the version flag.
 	if isVersionFlagSet(args) {
-		fmt.Printf("Version: %s\n", cli.Version)
-		return
+        opt := cli.GetOption(OptVersionName)
+        if opt != nil {
+            fmt.Printf("Version: %s\n", opt.Value)
+        }
+        return
 	}
 	
 
@@ -141,7 +144,28 @@ func (cmd *Command) SetDefaultConfigOption() {
 // Set version option
 //
 func (cli *CLI) SetVersion(version string) {
-	cli.Version = version
+    opt := cli.GetOption(OptVersionName)
+    if opt != nil {
+        opt.Value = version
+    }
+}
+
+
+//
+// Get option.
+//
+func (cli *CLI) GetOption(name string) *Option {
+    cmd := cli.Command
+    if cmd == nil {
+        fmt.Printf("missing required parameter: cli_command=null\n")
+        return nil
+    }
+    opt, ok := cmd.Options[OptVersionName]
+    if opt == nil || !ok {
+        fmt.Printf("missing required parameter: option_name=%s\n", OptVersionName)
+        return nil
+    }
+    return opt
 }
 
 
