@@ -28,7 +28,7 @@ const (
 )
 
 
-type Cli struct {
+type CLI struct {
     Command  *Command
     Version  string
     execName string
@@ -52,7 +52,7 @@ type Option struct {
 //
 // New CLI
 //
-func NewCli(defaultFunc func(*Command)) *Cli {
+func NewCLI(defaultFunc func(*Command)) *CLI {
 	// Set reserved options.
 	options := make(map[string]*Option)
 	options[OptHelpName] = &Option{
@@ -74,7 +74,7 @@ func NewCli(defaultFunc func(*Command)) *Cli {
 		Options: options,
 	}
 
-	return &Cli{
+	return &CLI{
 		Command: rootCommand,
 	}
 }
@@ -94,7 +94,7 @@ func NewCommand(name string) *Command {
 //
 // Run CLI
 //
-func (cli *Cli) Run() {
+func (cli *CLI) Run() {
 	args := os.Args[1:]
 
 	// If there is no arguments provided, run the root command.
@@ -140,7 +140,7 @@ func (cmd *Command) SetDefaultConfigOption() {
 //
 // Set version option
 //
-func (cli *Cli) SetVersion(version string) {
+func (cli *CLI) SetVersion(version string) {
 	cli.Version = version
 }
 

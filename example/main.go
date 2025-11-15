@@ -12,9 +12,9 @@ import (
 
 func main() {
     // Initialize CLI.
-    myCli := cli.NewCli(mainFunc)
-    myCli.SetVersion("1.0.0")
-    myCli.Command.SetDefaultConfigOption()
+    myCLI := cli.NewCLI(mainFunc)
+    myCLI.SetVersion("1.0.0")
+    myCLI.Command.SetDefaultConfigOption()
 
 	// Add `list` command.
 	listCommand := cli.NewCommand("list")
@@ -23,12 +23,12 @@ func main() {
 	listCommand.Options["local"] = &cli.Option{
         Alias: "l",
     }
-	myCli.Command.Commands = append(myCli.Command.Commands, listCommand)
+	myCLI.Command.Commands = append(myCLI.Command.Commands, listCommand)
 
 	// Add `push` command.
 	pushCommand := cli.NewCommand("push")
 	pushCommand.Usage = "Push the source code."
-	myCli.Command.Commands = append(myCli.Command.Commands, pushCommand)
+	myCLI.Command.Commands = append(myCLI.Command.Commands, pushCommand)
 
 	// Add `push > origin` command.
 	pushOriginCommand := cli.NewCommand("origin")
@@ -41,7 +41,7 @@ func main() {
 	pushCommand.Commands = append(pushCommand.Commands, pushOriginCommand)
 
     // Run the CLI.
-    myCli.Run()
+    myCLI.Run()
 }
 
 

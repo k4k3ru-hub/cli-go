@@ -23,7 +23,7 @@ func TestVersionOption(t *testing.T) {
 
 	// Capture the standard output of a command execution.
 	output := captureStdout(func() {
-		cli := cli.NewCli(func(options map[string]*cli.Option) {})
+		cli := cli.NewCLI(func(options map[string]*cli.Option) {})
 		cli.SetVersion("1.0.0")
 		cli.Run()
 	})
